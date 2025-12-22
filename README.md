@@ -1,0 +1,161 @@
+# `bytecursor.js` – Cursor-Based Binary Data Reader/Writer
+
+A zero-dependency, immutable, and bounds-safe wrapper around JavaScript’s `DataView`, designed for **sequential binary parsing and serialization** with an internal cursor.
+
+Unlike raw `DataView`, **bytecursor** tracks your position automatically, supports UTF-8 strings out of the box, and enforces strict bounds checking - making binary protocol implementation safer and more readable.
+
+---
+
+## ✅ Key Features
+
+- ⏩ **Automatic cursor**: Read/write sequentially without manual offsets  
+- 🛡️ **Strict bounds checking**: Prevents out-of-range access at runtime  
+- 🔤 **UTF-8 string support**: Encode/decode strings seamlessly via `TextEncoder`/`TextDecoder`  
+- 📏 **View slicing**: Work with subsections of an `ArrayBuffer`  
+- 🔄 **Method chaining**: All write operations return the instance for fluent APIs  
+- 🧊 **Immutable & frozen**: The API object and its properties are `Object.freeze`d for safety  
+- 📦 **Pure ES module**: No dependencies, modern JavaScript only  
+
+> ⚠️ **Note**: All operations happen at the current cursor position.
+
+---
+
+## 📦 Installation
+
+Place `bytecursor.js` in your project and import it:
+
+```js
+import bytecursor from './bytecursor.js';
+```
+
+---
+
+## 🧪 Quick Example
+
+```js
+import bytecursor from './bytecursor.js';
+
+// Create a 16-byte buffer
+const cursor = bytecursor(new ArrayBuffer(16));
+
+// Write data sequentially
+cursor.writeString("OK")     // UTF-8 encoded → 2 bytes
+      .writeUint8(200)       // → 1 byte
+      .writeInt32(12345, true); // little-endian → 4 bytes
+
+console.log(cursor.tell()); // 7
+
+// Read it back
+cursor.rewind();
+console.log(cursor.getString(2));    // "OK"
+console.log(cursor.getUint8());      // 200
+console.log(cursor.getInt32(true));  // 12345
+```
+
+---
+
+## 📚 API Reference
+
+### 🔧 Initialization
+
+```js
+bytecursor(buffer, [viewOffset = 0], [viewLength])
+```
+
+- `buffer`: Must be an `ArrayBuffer` (throws `TypeError` otherwise)
+- Returns a **frozen** API object with a cursor starting at `0` (relative to the view)
+
+#### Public Properties (Immutable)
+
+| Property | Description |
+|--------|-------------|
+| `.buffer` | The original `ArrayBuffer` |
+| `.view` | The underlying `DataView` (with offset/length as provided) |
+| `.length` | Byte length of the active view (`number`, not a method) |
+
+---
+
+### 🧭 Cursor Control
+
+| Method | Description |
+|-------|-------------|
+| `.tell()` | Returns current cursor position (0-based, relative to view start) |
+| `.seek(pos)` | Move cursor to absolute position `pos` (within view bounds) |
+| `.rewind()` | Reset cursor to `0` |
+| `.skip(n)` | Advance cursor by `n` bytes |
+| `.eof()` | Returns `true` if cursor ≥ view length |
+
+All cursor methods (except `tell` and `eof`) return the API instance for chaining.
+
+---
+
+### 🔢 Reading Numeric Values
+
+All read methods **advance the cursor** by the size of the type.
+
+| Method | Size | Description |
+|-------|------|-------------|
+| `.getUint8()` | 1 | Unsigned 8-bit integer |
+| `.getInt8()` | 1 | Signed 8-bit integer |
+| `.getUint16(littleEndian?)` | 2 | Unsigned 16-bit integer |
+| `.getInt16(littleEndian?)` | 2 | Signed 16-bit integer |
+| `.getUint32(littleEndian?)` | 4 | Unsigned 32-bit integer |
+| `.getInt32(littleEndian?)` | 4 | Signed 32-bit integer |
+| `.getFloat32(littleEndian?)` | 4 | 32-bit float |
+| `.getFloat64(littleEndian?)` | 8 | 64-bit float |
+
+---
+
+### ✍️ Writing Numeric Values
+
+All write methods advance the cursor and return the API for chaining.
+
+| Method | Example |
+|-------|--------|
+| `.writeUint8(v)` | `cursor.writeUint8(255)` |
+| `.writeInt8(v)` | `cursor.writeInt8(-10)` |
+| `.writeUint16(v, littleEndian?)` | `cursor.writeUint16(1000, true)` |
+| `.writeInt16(v, littleEndian?)` | |
+| `.writeUint32(v, littleEndian?)` | |
+| `.writeInt32(v, littleEndian?)` | |
+| `.writeFloat32(v, littleEndian?)` | |
+| `.writeFloat64(v, littleEndian?)` | |
+
+---
+
+### 📄 Bytes & Strings (UTF-8)
+
+| Method | Description |
+|-------|-------------|
+| `.getBytes([length])` | Reads `length` bytes from cursor as `Uint8Array` (default: to end of view) |
+| `.getString(length)` | Decodes `length` bytes as UTF-8 string |
+| `.writeBytes(uint8Array)` | Writes a `Uint8Array` at cursor |
+| `.writeString(str)` | Encodes and writes a UTF-8 string |
+
+> 🌐 Uses browser-native `TextEncoder` and `TextDecoder` with **UTF-8** encoding.
+
+---
+
+### ✂️ Buffer Extraction
+
+| Method | Description |
+|-------|-------------|
+| `.slice(start?, end?)` | Returns a **copy** of the underlying buffer from `view.byteOffset + start` to `view.byteOffset + end` (defaults to entire view) |
+
+> ⚠️ This slices the **original buffer**, not relative to the cursor.
+
+---
+
+## 🚫 What It *Doesn’t* Do
+
+- ❌ No random-access reading/writing (e.g., `getUint32(12)`)
+- ❌ No support for non-UTF-8 encodings
+- ❌ No automatic length-prefix handling (you manage string/byte lengths)
+
+This keeps the API minimal, predictable, and focused on **stream-like binary parsing**.
+
+---
+
+## 📄 License
+
+See [LICENSE](./LICENSE) for details.
