@@ -25,7 +25,7 @@ Unlike raw `DataView`, **bytecursor** tracks your position automatically, suppor
 Place `src/bytecursor.js` in your project and import it:
 
 ```js
-import bytecursor from './src/bytecursor.js';
+import bytecursor from './bytecursor.js';
 ```
 
 ---
@@ -33,7 +33,7 @@ import bytecursor from './src/bytecursor.js';
 ## 🧪 Quick Example
 
 ```js
-import bytecursor from './src/bytecursor.js';
+import bytecursor from './bytecursor.js';
 
 // Create a 16-byte buffer
 const cursor = bytecursor(new ArrayBuffer(16));
@@ -113,13 +113,13 @@ All write methods advance the cursor and return the API for chaining.
 | Method | Example |
 |-------|--------|
 | `.writeUint8(v)` | `cursor.writeUint8(255)` |
-| `.writeInt8(v)` | `cursor.writeInt8(-10)` |
-| `.writeUint16(v, littleEndian?)` | `cursor.writeUint16(1000, true)` |
-| `.writeInt16(v, littleEndian?)` | |
-| `.writeUint32(v, littleEndian?)` | |
-| `.writeInt32(v, littleEndian?)` | |
-| `.writeFloat32(v, littleEndian?)` | |
-| `.writeFloat64(v, littleEndian?)` | |
+| `.writeInt8(v)` | `cursor.writeInt8(-128)` |
+| `.writeUint16(v, littleEndian?)` | `cursor.writeUint16(65535, true)` |
+| `.writeInt16(v, littleEndian?)` | `cursor.writeInt16(-32768, true)` |
+| `.writeUint32(v, littleEndian?)` | `cursor.writeUint32(4294967295, true)` |
+| `.writeInt32(v, littleEndian?)` | `cursor.writeInt32(-2147483648, true)` |
+| `.writeFloat32(v, littleEndian?)` | `cursor.writeFloat32(3.14159, true)` |
+| `.writeFloat64(v, littleEndian?)` | `cursor.writeFloat64(2.718281828, true)` |
 
 ---
 
