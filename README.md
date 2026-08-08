@@ -22,10 +22,10 @@ Unlike raw `DataView`, **bytecursor** tracks your position automatically, suppor
 
 ## 📦 Installation
 
-Place `bytecursor.js` in your project and import it:
+Place `src/bytecursor.js` in your project and import it:
 
 ```js
-import bytecursor from './bytecursor.js';
+import bytecursor from './src/bytecursor.js';
 ```
 
 ---
@@ -33,14 +33,14 @@ import bytecursor from './bytecursor.js';
 ## 🧪 Quick Example
 
 ```js
-import bytecursor from './bytecursor.js';
+import bytecursor from './src/bytecursor.js';
 
 // Create a 16-byte buffer
 const cursor = bytecursor(new ArrayBuffer(16));
 
 // Write data sequentially
-cursor.writeString("OK")     // UTF-8 encoded → 2 bytes
-      .writeUint8(200)       // → 1 byte
+cursor.writeString("OK")        // UTF-8 encoded → 2 bytes
+      .writeUint8(200)          // → 1 byte
       .writeInt32(12345, true); // little-endian → 4 bytes
 
 console.log(cursor.tell()); // 7
@@ -143,6 +143,18 @@ All write methods advance the cursor and return the API for chaining.
 | `.slice(start?, end?)` | Returns a **copy** of the underlying buffer from `view.byteOffset + start` to `view.byteOffset + end` (defaults to entire view) |
 
 > ⚠️ This slices the **original buffer**, not relative to the cursor.
+
+---
+
+## 🧪 Testing
+
+This library includes a zero-dependency, comprehensive browser-based verification suite (82 assertions covering 100% of methods, boundary guards, and error conditions).
+
+To run the test suite:
+
+1. Serve the repository using any static web server (e.g., Nginx, Caddy, or Python's `http.server`).
+2. Open `tests/index.html` in your browser (e.g., `http://localhost/tests/index.html`).
+3. View results visually on the page or open Developer Tools (`F12` -> **Console**) to inspect grouped log outputs and execution metrics.
 
 ---
 
