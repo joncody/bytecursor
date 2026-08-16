@@ -1,5 +1,11 @@
 # `bytecursor.js` – Cursor-Based Binary Data Reader/Writer
 
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Module: ESM](https://img.shields.io/badge/Module-ESM-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+[![Dependencies: Zero](https://img.shields.io/badge/Dependencies-0-brightgreen.svg)]()
+[![Tests: 82 Passing](https://img.shields.io/badge/Tests-82%20Passing-success.svg)](./tests/index.html)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A zero-dependency, immutable, and bounds-safe wrapper around JavaScript’s `DataView`, designed for **sequential binary parsing and serialization** with an internal cursor.
 
 Unlike raw `DataView`, **bytecursor** tracks your position automatically, supports UTF-8 strings out of the box, and enforces strict bounds checking - making binary protocol implementation safer and more readable.
