@@ -1,4 +1,10 @@
 /**
+ * @fileoverview Functional byte-level cursor for ArrayBuffer and DataView.
+ * Provides seekable, sequential reading and writing for binary numbers,
+ * raw bytes, and UTF-8 strings.
+ */
+
+/**
  * UTF-8 text encoder instance.
  * @type {TextEncoder}
  */
