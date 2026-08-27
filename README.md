@@ -6,23 +6,24 @@
 [![Tests: 82 Passing](https://img.shields.io/badge/Tests-82%20Passing-success.svg)](./tests/index.html)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A zero-dependency, immutable, and bounds-safe wrapper around JavaScript’s `DataView`, designed for **sequential binary parsing and serialization** with an internal cursor.
+A zero-dependency, immutable, and bounds-safe wrapper around JavaScript’s `DataView`, designed for **zero-copy sequential binary parsing and serialization** with an internal cursor.
 
-Unlike raw `DataView`, **bytecursor** tracks your position automatically, supports UTF-8 strings out of the box, and enforces strict bounds checking - making binary protocol implementation safer and more readable.
+Unlike raw `DataView`, **bytecursor** tracks your position automatically, decodes and encodes UTF-8 strings directly in-buffer, and enforces strict bounds checking—making binary protocol implementation fast, safe, and readable.
 
 ---
 
 ## ✅ Key Features
 
-- ⏩ **Automatic cursor**: Read/write sequentially without manual offsets  
-- 🛡️ **Strict bounds checking**: Prevents out-of-range access at runtime  
-- 🔤 **UTF-8 string support**: Encode/decode strings seamlessly via `TextEncoder`/`TextDecoder`  
-- 📏 **View slicing**: Work with subsections of an `ArrayBuffer`  
+- ⏩ **Automatic cursor**: Read/write sequentially without manual offset math  
+- ⚡ **Zero-copy operations**: Read byte sequences and strings directly from buffer views without memory cloning  
+- 🛡️ **Strict bounds checking**: Prevents out-of-range reads and writes at runtime  
+- 🔤 **High-performance UTF-8**: Direct encoding via `TextEncoder.prototype.encodeInto` and zero-copy decoding with `TextDecoder`  
+- 📏 **View slicing & subarray views**: Work with subsections of an `ArrayBuffer` efficiently  
 - 🔄 **Method chaining**: All write operations return the instance for fluent APIs  
 - 🧊 **Immutable & frozen**: The API object and its properties are `Object.freeze`d for safety  
-- 📦 **Pure ES module**: No dependencies, modern JavaScript only  
+- 📦 **Pure ES module**: Zero dependencies, modern JavaScript only  
 
-> ⚠️ **Note**: All operations happen at the current cursor position.
+> ⚠️ **Note**: All operations happen sequentially at the current cursor position.
 
 ---
 
@@ -45,7 +46,7 @@ import bytecursor from './bytecursor.js';
 const cursor = bytecursor(new ArrayBuffer(16));
 
 // Write data sequentially
-cursor.writeString("OK")        // UTF-8 encoded → 2 bytes
+cursor.writeString("OK")        // UTF-8 encoded directly in-buffer → 2 bytes
       .writeUint8(200)          // → 1 byte
       .writeInt32(12345, true); // little-endian → 4 bytes
 
@@ -53,7 +54,7 @@ console.log(cursor.tell()); // 7
 
 // Read it back
 cursor.rewind();
-console.log(cursor.getString(2));    // "OK"
+console.log(cursor.getString(2));    // "OK" (zero-copy decode)
 console.log(cursor.getUint8());      // 200
 console.log(cursor.getInt32(true));  // 12345
 ```
@@ -75,7 +76,7 @@ bytecursor(buffer, [viewOffset = 0], [viewLength])
 
 | Property | Description |
 |--------|-------------|
-| `.buffer` | The original `ArrayBuffer` |
+| `.buffer` | The underlying `ArrayBuffer` |
 | `.view` | The underlying `DataView` (with offset/length as provided) |
 | `.length` | Byte length of the active view (`number`, not a method) |
 
@@ -133,12 +134,12 @@ All write methods advance the cursor and return the API for chaining.
 
 | Method | Description |
 |-------|-------------|
-| `.getBytes([length])` | Reads `length` bytes from cursor as `Uint8Array` (default: to end of view) |
-| `.getString(length)` | Decodes `length` bytes as UTF-8 string |
-| `.writeBytes(uint8Array)` | Writes a `Uint8Array` at cursor |
-| `.writeString(str)` | Encodes and writes a UTF-8 string |
+| `.getBytes([length])` | Returns a zero-copy `Uint8Array` subarray view from cursor (default: remaining view length) |
+| `.getString(length)` | Decodes `length` bytes directly from the buffer as a UTF-8 string |
+| `.writeBytes(uint8Array)` | Copies a `Uint8Array` into the buffer at cursor position |
+| `.writeString(str)` | Encodes UTF-8 string directly into buffer using `encodeInto` (zero intermediate allocation) |
 
-> 🌐 Uses browser-native `TextEncoder` and `TextDecoder` with **UTF-8** encoding.
+> 🌐 Uses browser-native `TextEncoder` and `TextDecoder` with high-performance UTF-8 stream processing.
 
 ---
 
@@ -146,9 +147,9 @@ All write methods advance the cursor and return the API for chaining.
 
 | Method | Description |
 |-------|-------------|
-| `.slice(start?, end?)` | Returns a **copy** of the underlying buffer from `view.byteOffset + start` to `view.byteOffset + end` (defaults to entire view) |
+| `.slice(start?, end?)` | Returns an isolated **copied clone** of the underlying buffer from `view.byteOffset + start` to `view.byteOffset + end` |
 
-> ⚠️ This slices the **original buffer**, not relative to the cursor.
+> 💡 **Tip**: Use `.getBytes()` for zero-copy slice viewing, and `.slice()` when you need an independent cloned `ArrayBuffer`.
 
 ---
 
