@@ -3,7 +3,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Module: ESM](https://img.shields.io/badge/Module-ESM-blue.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 [![Dependencies: Zero](https://img.shields.io/badge/Dependencies-0-brightgreen.svg)]()
-[![Tests: 82 Passing](https://img.shields.io/badge/Tests-82%20Passing-success.svg)](./tests/index.html)
+[![Tests: 84 Passing](https://img.shields.io/badge/Tests-84%20Passing-success.svg)](./tests/index.html)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A zero-dependency, immutable, and bounds-safe wrapper around JavaScript’s `DataView`, designed for **zero-copy sequential binary parsing and serialization** with an internal cursor.
@@ -155,7 +155,7 @@ All write methods advance the cursor and return the API for chaining.
 
 ## 🧪 Testing
 
-This library includes a zero-dependency, comprehensive browser-based verification suite (82 assertions covering 100% of methods, boundary guards, and error conditions).
+This library includes a zero-dependency, comprehensive browser-based verification suite (84 assertions covering 100% of methods, boundary guards, and error conditions).
 
 To run the test suite:
 

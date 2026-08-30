@@ -713,6 +713,24 @@ function run_all_tests() {
         "Number passed to writeString throws TypeError"
     );
 
+    const small_cursor = bytecursor(new ArrayBuffer(5));
+    runner.assert_throws(
+        function () {
+            small_cursor.writeString("Hello World!");
+        },
+        RangeError,
+        "String exceeding remaining buffer view throws RangeError"
+    );
+
+    const unicode_small_cursor = bytecursor(new ArrayBuffer(2));
+    runner.assert_throws(
+        function () {
+            unicode_small_cursor.writeString("🚀");
+        },
+        RangeError,
+        "Multi-byte Unicode string exceeding buffer view throws RangeError"
+    );
+
     // -------------------------------------------------------------------------
     // GROUP 8: Sub-view Isolation & Offset Mapping
     // -------------------------------------------------------------------------
